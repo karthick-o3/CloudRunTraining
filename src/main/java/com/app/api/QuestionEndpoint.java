@@ -1,9 +1,8 @@
-package com.api;
+package com.app.api;
 
-import com.model.Question;
-import com.repository.QuestionRepository;
+import com.app.model.Question;
+import com.app.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

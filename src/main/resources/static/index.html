@@ -45,25 +45,26 @@
 <div class="container">
     <div class="question" id="question">Loading question...</div>
     <div class="buttons">
-        <button class="yes" onclick="answerQuestion('Yes')">Yes</button>
-        <button class="no" onclick="answerQuestion('No')">No</button>
+        <button class="yes" onclick="answerQuestion('true')">Yes</button>
+        <button class="no" onclick="answerQuestion('false')">No</button>
     </div>
 </div>
 
 <script>
     let questions = [];
     let currentIndex = 0;
+    let score = 0;
 
     // Fetch questions from the backend
-    let domain = window.location.contains("localhost) ? "http://localhost:8080/" : "http://localhost:8080/"
+    let domain = window.location.hostname.includes("localhost") ? "http://localhost:8080" : "http://localhost:8080";
     async function fetchQuestions() {
         try {
-            const response = await fetch(`${domain}api/questions`);
-            console.log(response)
+            const response = await fetch(`${domain}/questions`);
             if (!response.ok) {
                 throw new Error('Failed to fetch questions');
             }
             questions = await response.json();
+            console.log(questions)
             displayQuestion();
         } catch (error) {
             document.getElementById('question').innerText = 'Error loading questions.';
@@ -76,14 +77,19 @@
         if (currentIndex < questions.length) {
             document.getElementById('question').innerText = questions[currentIndex].title;
         } else {
-            document.getElementById('question').innerText = 'You have answered all the questions!';
+            document.getElementById('question').innerText = 'You have answered all the questions! Your score is: ' + score + '/' + questions.length;
+
             document.querySelector('.buttons').style.display = 'none';
         }
     }
 
     // Handle user answer
     function answerQuestion(answer) {
-        console.log(`Question: ${questions[currentIndex].title}, Answer: ${answer}`);
+        console.log(questions[currentIndex].answer == answer)
+        if(questions[currentIndex].answer == answer) {
+            score++;
+            console.log(`Question: ${questions[currentIndex].title}, Answer: ${answer}`);
+        }
         currentIndex++;
         displayQuestion();
     }

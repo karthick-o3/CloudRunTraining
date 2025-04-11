@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yes/No Questions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .question {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .yes {
+            background-color: #4caf50;
+            color: white;
+        }
+        .no {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="question" id="question">Loading question...</div>
+    <div class="buttons">
+        <button class="yes" onclick="answerQuestion('Yes')">Yes</button>
+        <button class="no" onclick="answerQuestion('No')">No</button>
+    </div>
+</div>
+
+<script>
+    let questions = [];
+    let currentIndex = 0;
+
+    // Fetch questions from the backend
+    let domain = window.location.contains("localhost) ? "http://localhost:8080/" : "http://localhost:8080/"
+    async function fetchQuestions() {
+        try {
+            const response = await fetch(`${domain}api/questions`);
+            console.log(response)
+            if (!response.ok) {
+                throw new Error('Failed to fetch questions');
+            }
+            questions = await response.json();
+            displayQuestion();
+        } catch (error) {
+            document.getElementById('question').innerText = 'Error loading questions.';
+            console.error(error);
+        }
+    }
+
+    // Display the current question
+    function displayQuestion() {
+        if (currentIndex < questions.length) {
+            document.getElementById('question').innerText = questions[currentIndex].title;
+        } else {
+            document.getElementById('question').innerText = 'You have answered all the questions!';
+            document.querySelector('.buttons').style.display = 'none';
+        }
+    }
+
+    // Handle user answer
+    function answerQuestion(answer) {
+        console.log(`Question: ${questions[currentIndex].title}, Answer: ${answer}`);
+        currentIndex++;
+        displayQuestion();
+    }
+
+    // Load questions on page load
+    window.onload = fetchQuestions;
+</script>
+</body>
+</html>

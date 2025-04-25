@@ -59,7 +59,7 @@
     let domain = window.location.hostname.includes("localhost") ? "http://localhost:8080" : window.location.host;
     async function fetchQuestions() {
         try {
-            const response = await fetch(`${domain}/questions`);
+            const response = await fetch(`/questions`);
             if (!response.ok) {
                 throw new Error('Failed to fetch questions');
             }

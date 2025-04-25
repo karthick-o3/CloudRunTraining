@@ -1,0 +1,52 @@
+name: "Terraform Workflow"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  TF_WORKING_DIR: "./terraform"
+
+jobs:
+  terraform:
+    name: "Terraform Commands"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure GCP Credentials
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SERVICE_ACCOUNT_CREDENTIALS }}
+
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      # Step 3: Initialize Terraform
+      - name: Terraform Init
+        run: terraform init -input=false
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+      # Step 4: Validate Terraform configuration
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+      # Step 5: Create a Terraform plan
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+      # Step 6: Apply the Terraform plan (only on main branch)
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve tfplan
+        working-directory: ${{ env.TF_WORKING_DIR }}
